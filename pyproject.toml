@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "local-model"
+version = "0.1.0"
+description = ""
+authors = ["Matteo Prandi <matteo.prandi@live.it>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.5"
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+transformers = {extras = ["torch"], version = "^4.35.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
