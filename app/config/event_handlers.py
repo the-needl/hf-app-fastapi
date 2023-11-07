@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Type
 
 from fastapi import FastAPI
 import logging
@@ -8,9 +8,11 @@ from app.services.models import QAModel
 
 logger = logging.getLogger(__name__)
 
-def _startup_model(app: FastAPI) -> None:
+# TODO: evaluate how to generalize this set of functions allowing for multiple models init
+
+def _startup_model(app: FastAPI, Model:Type) -> None:
     model_path = settings.DEFAULT_MODEL_PATH
-    model_instance = QAModel(model_path)
+    model_instance = Model(model_path)
     app.state.model = model_instance
 
 

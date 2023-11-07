@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "DEBUG"
     CDN_BASE_URL: str
     RENDER_GIT_COMMIT: Optional[str]
+    
+    # TODO: implement Model_to_run management, list of models to run. They should also be imported in main.py
 
     DEFAULT_MODEL_PATH: str = "./hf_models/models"
     
@@ -72,7 +74,7 @@ class Settings(BaseSettings):
     @property
     def ENVIRONMENT(self) -> AppEnvironment:
         """Returns the app environment."""
-        return AppEnvironment.LOCAL
+        return Appsettingsment.LOCAL
 
     @property
     def UVICORN_WORKER_COUNT(self) -> int:
