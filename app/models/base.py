@@ -1,23 +1,51 @@
-from sqlalchemy import Column, DateTime, UUID
-from sqlalchemy.dialects.postgresql import ENUM
+from typing import Dict, List
 
-from sqlalchemy.sql import func
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
+import logging
+from abc import abstractmethod
 
-def to_pg_enum(enum_class) -> ENUM:
-    return ENUM(enum_class, name=enum_class.__name__)
+from transformers import AutoTokenizer
+from transformers import AutoModelForQuestionAnswering
+from transformers import pipeline
 
-@as_declarative()
-class Base:
-    id = Column(UUID, primary_key=True, index=True, default=func.uuid_generate_v4())
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, server_default=func.now(), onupdate=func.now(), nullable=False
-    )
+from huggingfastapi.models.payload import QAPredictionPayload
+from huggingfastapi.models.prediction import QAPredictionResult
 
-    __name__: str
+from app.services.utils import ModelLoader
+from app.config.config import settings
 
-    # Generate __tablename__ automatically
-    @declared_attr
-    def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+logger = logging.getLogger(__name__)
+
+class BaseModel:
+    def __init__(self, path=settings.DEFAULT_MODEL_PATH):
+        self.path = path
+        self._load_local_model()
+
+    def _load_local_model(self):
+        # TODO: allow for generic model management both for ModelLoader() arguments and pipeline execution
+        tokenizer, model = ModelLoader(
+            model_name=settings.SUM_MODEL_NAME,
+            model_directory=settings.DEFAULT_MODEL_PATH,
+            tokenizer_loader=AutoTokenizer,
+            model_loader=AutoModelForQuestionAnswering,
+        ).retrieve()
+
+        self.nlp = pipeline("summarization", model=model, tokenizer=tokenizer)
+
+    @abstractmethod
+    def _pre_process(self):
+        logger.debug("Pre-processing payload.")
+        pass
+    
+    @abstractmethod
+    def _post_process(self):
+        logger.debug("Post-processing prediction.")
+        pass
+
+    @abstractmethod
+    def _output(self):
+        logger.debug("Predicting.")
+        pass
+
+    @abstractmethod
+    def output(self):
+        pass
