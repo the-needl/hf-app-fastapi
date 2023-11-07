@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import logging
 
 from app.config.config import settings
-from app.services.nlp import QAModel
+from app.services.models import QAModel
 
 logger = logging.getLogger(__name__)
 
