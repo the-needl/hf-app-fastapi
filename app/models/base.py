@@ -7,9 +7,6 @@ from transformers import AutoTokenizer
 from transformers import AutoModelForQuestionAnswering
 from transformers import pipeline
 
-from huggingfastapi.models.payload import QAPredictionPayload
-from huggingfastapi.models.prediction import QAPredictionResult
-
 from app.services.utils import ModelLoader
 from app.config.config import settings
 
@@ -20,16 +17,9 @@ class BaseModel:
         self.path = path
         self._load_local_model()
 
+    @abstractmethod
     def _load_local_model(self):
-        # TODO: allow for generic model management both for ModelLoader() arguments and pipeline execution
-        tokenizer, model = ModelLoader(
-            model_name=settings.SUM_MODEL_NAME,
-            model_directory=settings.DEFAULT_MODEL_PATH,
-            tokenizer_loader=AutoTokenizer,
-            model_loader=AutoModelForQuestionAnswering,
-        ).retrieve()
-
-        self.nlp = pipeline("summarization", model=model, tokenizer=tokenizer)
+        pass
 
     @abstractmethod
     def _pre_process(self):

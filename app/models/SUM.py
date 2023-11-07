@@ -1,28 +1,39 @@
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from typing import Dict, List
 
-from app.models.base import Base
+import logging
 
-class SUMModel(Base):
-    """
-    A conversation with messages and linked documents
-    """
+from transformers import AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM
+from transformers import pipeline
 
-    messages = relationship("Message", back_populates="conversation")
-    conversation_documents = relationship(
-        "ConversationDocument", back_populates="conversation"
-    )
+from app.services.utils import ModelLoader
+from app.config.config import settings
+from app.models.base import BaseModel
 
+logger = logging.getLogger(__name__)
 
-class ConversationDocument(Base):
-    """
-    A many-to-many relationship between a conversation and a document
-    """
+class SUMMmodel(BaseModel):
+    def _load_local_model(self):
+        tokenizer, model = ModelLoader(
+            model_name=settings.SUM_MODEL_NAME,
+            model_directory=settings.DEFAULT_MODEL_PATH,
+            tokenizer_loader=AutoTokenizer,
+            model_loader=AutoModelForSeq2SeqLM,
+        ).retrieve()
 
-    conversation_id = Column(
-        UUID(as_uuid=True), ForeignKey("conversation.id"), index=True
-    )
-    document_id = Column(UUID(as_uuid=True), ForeignKey("document.id"), index=True)
-    conversation = relationship("Conversation", back_populates="conversation_documents")
-    document = relationship("Document", back_populates="conversations")
+        self.engine = pipeline("summarization", model=model, tokenizer=tokenizer)
+
+    def _pre_process(self):
+        logger.debug("Pre-processing payload.")
+        pass
+    
+    def _post_process(self):
+        logger.debug("Post-processing prediction.")
+        pass
+
+    def _output(self):
+        logger.debug("Predicting.")
+        pass
+
+    def output(self):
+        pass

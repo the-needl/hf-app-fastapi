@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from app.config.config import settings
 from app.config.event_handlers import start_app_handler, stop_app_handler
 from app.api.router import api_router
-from app.models import * #SUM, KEY, NER - Import everything for managing models via config
+from app.models import SUM#, KEY, NER
 
 logger = logging.getLogger(__name__)
 
@@ -28,12 +28,7 @@ def __setup_logging(log_level: str):
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    for model_name in settings.MODELS_TO_RUN:
-        try:
-            model = globals()[model_name]
-            start_app_handler(app, model)
-        except KeyError:
-            print(f"Model '{model_name}' not found in the 'models' module.")
+    [start_app_handler(app, model) for model in [SUM]]
     yield
     stop_app_handler(app)
 
