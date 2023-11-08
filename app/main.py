@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from app.config.config import settings
 from app.config.event_handlers import start_app_handler, stop_app_handler
 from app.api.router import api_router
-from app.models import SUM#, KEY, NER
+from app.models import *#SUM, KEY, NER
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +28,10 @@ def __setup_logging(log_level: str):
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    [start_app_handler(app, model) for model in [SUM]]
+    model_list = [SUM]
+    [start_app_handler(app, model) for model in model_list]
     yield
-    stop_app_handler(app)
+    [stop_app_handler(app, model) for model in model_list]
 
 app = FastAPI(title=settings.APP_NAME, version=settings.VERSION, lifespan=lifespan)
 app.include_router(api_router, prefix=settings.API_PREFIX)

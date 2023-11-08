@@ -7,24 +7,26 @@ from app.config.config import settings
 
 logger = logging.getLogger(__name__)
 
-def _startup_model(app: FastAPI, Model:Type) -> None:
+def _startup_model(app: FastAPI, Model: Type) -> None:
     model_path = settings.DEFAULT_MODEL_PATH
     model_instance = Model(model_path)
-    app.state.model = model_instance
+    setattr(app, f"state.{model_instance.model_name}")
+    #app.state.model = model_instance
 
-def _shutdown_model(app: FastAPI) -> None:
-    app.state.model = None
-
-def start_app_handler(app: FastAPI) -> Callable:
+def start_app_handler(app: FastAPI, Model: Type) -> Callable:
     def startup() -> None:
         logger.info("Running app start handler.")
-        _startup_model(app)
+        _startup_model(app, Model)
 
     return startup
 
-def stop_app_handler(app: FastAPI) -> Callable:
+def stop_app_handler(app: FastAPI, model: str) -> Callable:
     def shutdown() -> None:
-        logger.info("Running app shutdown handler.")
-        _shutdown_model(app)
+        logger.info(f"Running app shutdown handler on: {model}..")
+        _shutdown_model(app, model)
 
     return shutdown
+
+def _shutdown_model(app: FastAPI, model: str) -> None:
+    setattr(app, f"state.{model}", None)
+    #app.state.model = None
