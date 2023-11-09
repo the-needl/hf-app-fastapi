@@ -24,4 +24,6 @@ async def summarize(
 ) -> SUMResult:
     
     model: SUMModel = request.app.state.model
-    summary: SUMResult = model.output(payload)
+    summary: SUMResult = model.predict(payload)
+    
+    return summary
