@@ -49,7 +49,8 @@ class Settings(BaseSettings):
     
     DEFAULT_MODEL_PATH: str = "./hf_models/models"
     
-    MODEL_TYPE : str = "SUM"
+    MODEL_TYPE: str = "SUM"
+    MODEL_TASK: str = "summarization"
     MODEL_NAME: str = "facebook/bart-large-cnn"
     # NER_MODEL_NAME: str = "xlm-roberta-large-finetuned-conll03-english"
     # KEY_MODEL_NAME: str = "ml6team/keyphrase-extraction-kbir-inspec"

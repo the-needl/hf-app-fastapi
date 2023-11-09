@@ -14,17 +14,16 @@ logger = logging.getLogger(__name__)
 class BaseModel:
     def __init__(self,
                  model_name: str,
-                 model_directory: str,
-                 tokenizer_loader: PreTrainedTokenizer,
-                 model_loader: PreTrainedModel):
+                 model_path: str,
+                 model_loader: PreTrainedModel,
+                 tokenizer_loader: PreTrainedTokenizer):
         
         self.model_name = Path(model_name)
-        self.model_directory = Path(model_directory)
-        self.tokenizer_loader = tokenizer_loader
+        self.model_path = Path(model_path)
         self.model_loader = model_loader
+        self.tokenizer_loader = tokenizer_loader
         
-    def _load_local_model(self):
-        self.save_path = self.model_directory / self.model_name
+        self.save_path = self.model_path / self.model_name
         
         if not self.save_path.exists():
             logger.debug(f"[+] {self.save_path} does not exit!")

@@ -28,9 +28,9 @@ def __setup_logging(log_level: str):
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    start_app_handler(app, Model(settings.MODEL_NAME))
+    start_app_handler(app, Model(settings.MODEL_TYPE))
     yield
-    stop_app_handler(app, Model(settings.MODEL_NAME))
+    stop_app_handler(app, Model(settings.MODEL_TYPE))
 
 app = FastAPI(title=settings.APP_NAME, version=settings.VERSION, lifespan=lifespan)
 app.include_router(api_router, prefix=settings.API_PREFIX)

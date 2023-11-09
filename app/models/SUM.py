@@ -13,15 +13,19 @@ from app.models.base import BaseModel
 logger = logging.getLogger(__name__)
 
 class SUMMmodel(BaseModel):
-    def _load_local_model(self):
-        tokenizer, model = ModelLoader(
-            model_name=settings.SUM_MODEL_NAME,
-            model_directory=settings.DEFAULT_MODEL_PATH,
-            tokenizer_loader=AutoTokenizer,
-            model_loader=AutoModelForSeq2SeqLM,
-        ).retrieve()
+    def __init__(self, *args, **kwargs):
+        
+        model_args = {
+            'model_name': settings.SUM_MODEL_NAME,
+            'model_path': settings.DEFAULT_MODEL_PATH,
+            'model_loader': AutoModelForSeq2SeqLM,
+            'tokenizer_loader': AutoTokenizer
+        }
+        model_args.update(kwargs)
+        
+        super().__init__(*args, **model_args)
 
-        self.engine = pipeline("summarization", model=model, tokenizer=tokenizer)
+        self.engine = pipeline(settings.MODEL_TASK, model=self.model, tokenizer=self.tokenizer)
 
     def _pre_process(self):
         logger.debug("Pre-processing payload.")
