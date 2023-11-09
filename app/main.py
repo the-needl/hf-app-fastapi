@@ -5,10 +5,10 @@ import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.config.config import settings
-from app.config.event_handlers import start_app_handler, stop_app_handler
+from app.core.config import settings
+from app.core.event_handlers import start_app_handler, stop_app_handler
 from app.api.router import api_router
-from app.models import *#SUM, KEY, NER
+from app.models import Model
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +28,9 @@ def __setup_logging(log_level: str):
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    model_list = [SUM]
-    [start_app_handler(app, model) for model in model_list]
+    start_app_handler(app, Model(settings.MODEL_NAME))
     yield
-    [stop_app_handler(app, model) for model in model_list]
+    stop_app_handler(app, Model(settings.MODEL_NAME))
 
 app = FastAPI(title=settings.APP_NAME, version=settings.VERSION, lifespan=lifespan)
 app.include_router(api_router, prefix=settings.API_PREFIX)

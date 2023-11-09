@@ -46,15 +46,13 @@ class Settings(BaseSettings):
     API_KEY: SecretStr
     LOG_LEVEL: str = "DEBUG"
     CDN_BASE_URL: str
-    RENDER_GIT_COMMIT: Optional[str]
     
-    # TODO: implement Model_to_run management, list of models to run. They should also be imported in main.py
-
     DEFAULT_MODEL_PATH: str = "./hf_models/models"
     
-    SUM_MODEL_NAME: str = "facebook/bart-large-cnn"
-    NER_MODEL_NAME: str = "xlm-roberta-large-finetuned-conll03-english"
-    KEY_MODEL_NAME: str = "ml6team/keyphrase-extraction-kbir-inspec"
+    MODEL_TYPE : str = "SUM"
+    MODEL_NAME: str = "facebook/bart-large-cnn"
+    # NER_MODEL_NAME: str = "xlm-roberta-large-finetuned-conll03-english"
+    # KEY_MODEL_NAME: str = "ml6team/keyphrase-extraction-kbir-inspec"
     
     @property
     def VERBOSE(self) -> bool:
@@ -74,7 +72,7 @@ class Settings(BaseSettings):
     @property
     def ENVIRONMENT(self) -> AppEnvironment:
         """Returns the app environment."""
-        return Appsettingsment.LOCAL
+        return AppEnvironment.LOCAL
 
     @property
     def UVICORN_WORKER_COUNT(self) -> int:
