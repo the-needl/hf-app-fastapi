@@ -34,17 +34,14 @@ class Base:
 
     @abstractmethod
     def _pre_process(self):
-        logger.debug("Pre-processing payload.")
         pass
     
     @abstractmethod
     def _post_process(self):
-        logger.debug("Post-processing prediction.")
         pass
 
     @abstractmethod
     def _output(self):
-        logger.debug("Predicting.")
         pass
 
     @abstractmethod

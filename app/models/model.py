@@ -9,7 +9,8 @@ from transformers import pipeline
 
 from app.core.config import settings
 from app.models.base import Base
-from app.models.struct import SUMPayload
+from app.models.payload import SUMPayload
+from app.models.result import SUMResult
 from app.core.messages import NO_VALID_PAYLOAD
 
 logger = logging.getLogger(__name__)
@@ -47,28 +48,45 @@ class SUMModel(BaseModel):
 
         self.engine = pipeline("summarization", model=self.model, tokenizer=self.tokenizer)
 
-    def _pre_process(self):
+    def _pre_process(self, payload: SUMPayload) -> str:
         logger.debug("Pre-processing payload.")
-        pass
+        result = payload.context
+        
+        return result
     
-    def _post_process(self):
+    def _post_process(self, prediction: List) -> SUMResult:
         logger.debug("Post-processing prediction.")
-        pass
+        
+        # returned data is a Dict within a List, Dict to be passed to SUMResult
+        summary_raw = prediction[0]
+        summary = SUMResult(summary_raw)
+        
+        return summary
 
-    def _output(self):
+    def _predict(self, context: str) -> str:
         logger.debug("Predicting.")
-        pass
+        
+        SUM_input = context
+        prediction_result = self.engine(SUM_input)
+        
+        return prediction_result
 
-    def output(self, payload: SUMPayload):
+    def predict(self, payload: SUMPayload):
         if payload is None:
             raise ValueError(NO_VALID_PAYLOAD.format(payload))
         
-        pre_proc_payload = self._pre_process(payload)
-        out = self._output(pre_proc_payload)
+        # prepare model arguments to be submitted
+        pre_proc_out = self._pre_process(payload)
+        
+        # call the model itself
+        out = self._predict(pre_proc_out)
         logger.info(out)
+        
+        # prepare model output
         post_proc_out = self._post_process(out)
         
         return post_proc_out
+    
 class NERModel(Base):
     pass
 
