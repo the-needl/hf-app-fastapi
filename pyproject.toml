@@ -12,6 +12,7 @@ fastapi = "^0.104.1"
 uvicorn = {extras = ["standard"], version = "^0.24.0"}
 transformers = {extras = ["torch"], version = "^4.35.0"}
 pydantic = "^2.4.2"
+pydantic-settings = "^2.0.3"
 
 [tool.poetry.scripts]
 start = "app.main:start"

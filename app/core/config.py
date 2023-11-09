@@ -1,7 +1,8 @@
 import os
 from enum import Enum
 from typing import List, Union, Optional
-from pydantic import BaseSettings, AnyHttpUrl, validator, SecretStr
+from pydantic import AnyHttpUrl, validator, SecretStr
+from pydantic_settings import BaseSettings
 from multiprocessing import cpu_count
 
 
