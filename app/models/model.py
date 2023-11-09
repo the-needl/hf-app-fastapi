@@ -1,4 +1,5 @@
 from typing import Dict, List
+from pydantic import BaseModel
 
 import logging
 
@@ -7,16 +8,18 @@ from transformers import AutoModelForSeq2SeqLM
 from transformers import pipeline
 
 from app.core.config import settings
-from app.models.base import BaseModel
+from app.models.base import Base
+from app.models.struct import SUMPayload
+from app.core.messages import NO_VALID_PAYLOAD
 
 logger = logging.getLogger(__name__)
 
-class Model:
+class ModelLoader:
     def __init__(self, model_type: str):
         self.create_instance(model_type)
         
     @staticmethod
-    def create_instance(model_type: str) -> BaseModel:
+    def create_instance(model_type: str) -> Base:
         model_mapping = {
             "SUM": SUMModel,
             "NER": NERModel,
@@ -33,7 +36,7 @@ class SUMModel(BaseModel):
     def __init__(self, *args, **kwargs):
         
         model_args = {
-            'model_name': settings.SUM_MODEL_NAME,
+            'model_name': settings.MODEL_NAME,
             'model_path': settings.DEFAULT_MODEL_PATH,
             'model_loader': AutoModelForSeq2SeqLM,
             'tokenizer_loader': AutoTokenizer
@@ -42,7 +45,7 @@ class SUMModel(BaseModel):
         
         super().__init__(*args, **model_args)
 
-        self.engine = pipeline(settings.MODEL_TASK, model=self.model, tokenizer=self.tokenizer)
+        self.engine = pipeline("summarization", model=self.model, tokenizer=self.tokenizer)
 
     def _pre_process(self):
         logger.debug("Pre-processing payload.")
@@ -56,14 +59,21 @@ class SUMModel(BaseModel):
         logger.debug("Predicting.")
         pass
 
-    def output(self):
-        pass
-
-class NERModel(BaseModel):
+    def output(self, payload: SUMPayload):
+        if payload is None:
+            raise ValueError(NO_VALID_PAYLOAD.format(payload))
+        
+        pre_proc_payload = self._pre_process(payload)
+        out = self._output(pre_proc_payload)
+        logger.info(out)
+        post_proc_out = self._post_process(out)
+        
+        return post_proc_out
+class NERModel(Base):
     pass
 
-class KEYModel(BaseModel):
+class KEYModel(Base):
     pass
 
-class QAModel(BaseModel):
+class QAModel(Base):
     pass

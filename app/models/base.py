@@ -11,7 +11,7 @@ from transformers import PreTrainedTokenizer
 
 logger = logging.getLogger(__name__)
 
-class BaseModel:
+class Base:
     def __init__(self,
                  model_name: str,
                  model_path: str,

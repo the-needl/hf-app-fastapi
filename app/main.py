@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.event_handlers import start_app_handler, stop_app_handler
 from app.api.router import api_router
-from app.models import Model
+from app.models.model import ModelLoader
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +28,11 @@ def __setup_logging(log_level: str):
     
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    start_app_handler(app, Model(settings.MODEL_TYPE))
+    start_app_handler(app,
+                      ModelLoader(settings.MODEL_TYPE))
     yield
-    stop_app_handler(app, Model(settings.MODEL_TYPE))
+    stop_app_handler(app,
+                     ModelLoader(settings.MODEL_TYPE))
 
 app = FastAPI(title=settings.APP_NAME, version=settings.VERSION, lifespan=lifespan)
 app.include_router(api_router, prefix=settings.API_PREFIX)
