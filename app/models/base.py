@@ -29,6 +29,8 @@ class Base:
             logger.debug(f"[+] {self.save_path} does not exit!")
             self.save_path.mkdir(parents=True, exist_ok=True)
             self.__download_model()
+        else:
+            logger.debug(f"[+] Model already existing, loading from {self.save_path}")
 
         self.tokenizer, self.model = self.__load_model()
 
