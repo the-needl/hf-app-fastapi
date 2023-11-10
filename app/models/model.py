@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class ModelLoader:
     def __init__(self, model_type: str):
         self.create_instance(model_type)
-        
+
     @staticmethod
     def create_instance(model_type: str) -> Base:
         model_mapping = {

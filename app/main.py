@@ -24,16 +24,17 @@ def __setup_logging(log_level: str):
     stream_handler.setFormatter(log_formatter)
     root_logger.addHandler(stream_handler)
     logger.info("Set up logging with log level %s", log_level)
-    
-    
+
+
+local_models = {}
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    model_instance = ModelLoader(settings.MODEL_TYPE)
-    
+    local_models[settings.MODEL_TYPE] = ModelLoader(settings.MODEL_TYPE)
     # start_app_handler(app, model_instance)
     yield
     # stop_app_handler(app, model_instance)
-    pass
+    local_models.clear()
 
 app = FastAPI(
     title=settings.APP_NAME,
