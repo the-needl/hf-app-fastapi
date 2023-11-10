@@ -30,9 +30,10 @@ def __setup_logging(log_level: str):
 async def lifespan(app: FastAPI):
     model_instance = ModelLoader(settings.MODEL_TYPE)
     
-    start_app_handler(app, model_instance)
+    # start_app_handler(app, model_instance)
     yield
-    stop_app_handler(app, model_instance)
+    # stop_app_handler(app, model_instance)
+    pass
 
 app = FastAPI(
     title=settings.APP_NAME,
