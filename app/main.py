@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     stop_app_handler(app,
                      ModelLoader(settings.MODEL_TYPE))
 
-app = FastAPI(title=settings.APP_NAME, version=settings.VERSION, lifespan=lifespan)
+app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, lifespan=lifespan)
 app.include_router(api_router, prefix=settings.API_PREFIX)
 
 def start():

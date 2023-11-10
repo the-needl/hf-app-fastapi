@@ -1,12 +1,12 @@
 import os
 from enum import Enum
-from typing import List, Union, Optional
+from typing import List, Union, Optional, ClassVar
 from pydantic import AnyHttpUrl, validator, SecretStr
 from pydantic_settings import BaseSettings
 from multiprocessing import cpu_count
 
 
-class AppConfig(BaseSettings.Config):
+class AppConfig(BaseSettings):
     """
     Config for settings classes that allows for
     combining Setings classes with different env_prefix settings.
@@ -15,7 +15,7 @@ class AppConfig(BaseSettings.Config):
     https://github.com/pydantic/pydantic/issues/1727#issuecomment-658881926
     """
 
-    case_sensitive = True
+    case_sensitive: ClassVar = True
 
     @classmethod
     def prepare_field(cls, field) -> None:
@@ -39,16 +39,14 @@ class Settings(BaseSettings):
     Application settings.
     """
     class Config(AppConfig):
-        env_prefix = ""
+        env_prefix: ClassVar = ""
 
     APP_NAME: str = "Generic HF app"
     APP_VERSION: str = "0.1.0"
     API_PREFIX: str = "/api"
-    API_KEY: SecretStr
     LOG_LEVEL: str = "DEBUG"
-    CDN_BASE_URL: str
     
-    DEFAULT_MODEL_PATH: str = "./hf_models/models"
+    DEFAULT_MODEL_PATH: str = "./.hf_models/models"
     
     MODEL_TYPE: str = "SUM"
     MODEL_NAME: str = "facebook/bart-large-cnn"
@@ -78,11 +76,11 @@ class Settings(BaseSettings):
     @property
     def UVICORN_WORKER_COUNT(self) -> int:
         if self.ENVIRONMENT == AppEnvironment.LOCAL:
-            return int(cpu_count*2 + 1)
+            return int(cpu_count() *2 + 1)
         return 3
 
     class Config(AppConfig):
-        env_prefix = ""
+        env_prefix: ClassVar = ""
 
 
 settings = Settings()

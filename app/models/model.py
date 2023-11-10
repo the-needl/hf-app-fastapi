@@ -33,7 +33,7 @@ class ModelLoader:
         else:
             raise ValueError(f"Model {model_type} not supported.")
 
-class SUMModel(BaseModel):
+class SUMModel(Base):
     def __init__(self, *args, **kwargs):
         
         model_args = {
