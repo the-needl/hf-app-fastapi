@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.models.model import SUMModel
 from app.models.result import SUMResult
 from app.models.payload import SUMPayload
-from app.api.router.deps import get_ml_models
+from app.api.deps import get_ml_models
 
 from uuid import UUID
 
