@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.event_handlers import start_app_handler, stop_app_handler
 from app.api.router import api_router
-from app.models.model import ModelLoader
+from app.models.model import create_instance#ModelLoader
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +30,10 @@ local_models = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.local_models = {}
-    app.state.local_models[settings.MODEL_TYPE] = ModelLoader(settings.MODEL_TYPE)
+    app.state.models = {}
+    app.state.models[settings.MODEL_TYPE] = create_instance(settings.MODEL_TYPE)
     yield
-    app.state.local_models.clear()
+    app.state.models.clear()
 
 app = FastAPI(
     title=settings.APP_NAME,

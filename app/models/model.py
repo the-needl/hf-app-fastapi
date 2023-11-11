@@ -15,6 +15,19 @@ from app.core.messages import NO_VALID_PAYLOAD
 
 logger = logging.getLogger(__name__)
 
+def create_instance(model_type: str) -> Base:
+        model_mapping = {
+            "SUM": SUMModel,
+            "NER": NERModel,
+            "KEY": KEYModel,
+            "QA": QAModel,
+        }
+        model_class = model_mapping.get(model_type)
+        if model_class:
+            return model_class()
+        else:
+            raise ValueError(f"Model {model_type} not supported.")
+
 class ModelLoader:
     def __init__(self, model_type: str):
         self.create_instance(model_type)
