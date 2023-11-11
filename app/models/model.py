@@ -49,17 +49,16 @@ class SUMModel(Base):
         
         return result
     
-    def _post_process(self, prediction: Dict[str, str]) -> SUMResult:
+    def _post_process(self, prediction: List) -> SUMResult:
         logger.debug("Post-processing prediction.")
         
         # returned data is a Dict within a List, Dict to be passed to SUMResult
-        summary_raw = prediction[0]
-        print(summary_raw)
+        summary_raw = prediction[0]['summary']
         summary = SUMResult(summary_raw)
         
         return summary
 
-    def _predict(self, context: str) -> str:
+    def _predict(self, context: str) -> List:
         logger.debug("Predicting.")
         
         SUM_input = context
