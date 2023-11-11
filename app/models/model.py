@@ -49,7 +49,7 @@ class SUMModel(Base):
         
         return result
     
-    def _post_process(self, prediction: List) -> SUMResult:
+    def _post_process(self, prediction: Dict[str, str]) -> SUMResult:
         logger.debug("Post-processing prediction.")
         
         # returned data is a Dict within a List, Dict to be passed to SUMResult

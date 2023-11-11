@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
 from typing import Dict
-from app.core.config import settings
 
 class SUMResult(BaseModel):
     # model output fields to be listed here, once passed to this class,
