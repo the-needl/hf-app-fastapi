@@ -28,24 +28,6 @@ def create_instance(model_type: str) -> Base:
         else:
             raise ValueError(f"Model {model_type} not supported.")
 
-class ModelLoader:
-    def __init__(self, model_type: str):
-        self.create_instance(model_type)
-
-    @staticmethod
-    def create_instance(model_type: str) -> Base:
-        model_mapping = {
-            "SUM": SUMModel,
-            "NER": NERModel,
-            "KEY": KEYModel,
-            "QA": QAModel,
-        }
-        model_class = model_mapping.get(model_type)
-        if model_class:
-            return model_class()
-        else:
-            raise ValueError(f"Model {model_type} not supported.")
-
 class SUMModel(Base):
     def __init__(self, *args, **kwargs):
         
@@ -84,7 +66,7 @@ class SUMModel(Base):
         
         return prediction_result
 
-    def predict(self, payload: SUMPayload):
+    def predict(self, payload: SUMPayload) -> SUMResult:
         if payload is None:
             raise ValueError(NO_VALID_PAYLOAD.format(payload))
         
