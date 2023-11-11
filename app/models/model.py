@@ -53,7 +53,7 @@ class SUMModel(Base):
         logger.debug("Post-processing prediction.")
         
         # returned data is a Dict within a List, Dict to be passed to SUMResult
-        summary_raw = prediction[0]['summary']
+        summary_raw = prediction[0]['summary_text']
         summary = SUMResult(summary_raw)
         
         return summary
