@@ -29,7 +29,7 @@ async def summarize(
     # ml_models: Dict = Depends(get_ml_models)
 ) -> SUMResult:
 
-    model: SUMModel = request.app.local_models[settings.MODEL_TYPE]
+    model: SUMModel = request.app.state.local_models[settings.MODEL_TYPE]
     summary: SUMResult = model.predict(payload)
 
     return summary

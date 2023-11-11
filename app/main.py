@@ -30,9 +30,9 @@ local_models = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    local_models[settings.MODEL_TYPE] = ModelLoader(settings.MODEL_TYPE)
+    app.state.local_models[settings.MODEL_TYPE] = ModelLoader(settings.MODEL_TYPE)
     yield
-    local_models.clear()
+    app.state.local_models.clear()
 
 app = FastAPI(
     title=settings.APP_NAME,
