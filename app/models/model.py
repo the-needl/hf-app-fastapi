@@ -54,6 +54,7 @@ class SUMModel(Base):
         
         # returned data is a Dict within a List, Dict to be passed to SUMResult
         summary_raw = prediction[0]
+        print(summary_raw)
         summary = SUMResult(summary_raw)
         
         return summary
