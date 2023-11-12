@@ -4,7 +4,10 @@ services:
     build:
       context: .
     volumes:
+    # only filechanges in .app trigger app live-reload
       - ./:/app
+      - /app/tests # needed to exclude app reload
+      - /.git # needed to exclude app reload
     ports:
       - 8000:8000
     env_file:

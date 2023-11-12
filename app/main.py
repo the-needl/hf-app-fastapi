@@ -1,8 +1,9 @@
 import logging
 import sys
+import time
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
@@ -41,6 +42,14 @@ app = FastAPI(
     lifespan=lifespan)
 
 app.include_router(api_router, prefix=settings.API_PREFIX)
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
 
 def start():
     print("Running in AppEnvironment: " + settings.ENVIRONMENT.value)

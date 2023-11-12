@@ -18,6 +18,9 @@ torch = ">=2.0.0, !=2.0.1, !=2.1.0"
 [tool.poetry.scripts]
 start = "app.main:start"
 
+[tool.poetry.group.dev.dependencies]
+httpx = "^0.25.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
