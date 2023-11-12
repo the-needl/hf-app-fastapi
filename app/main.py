@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.core.event_handlers import start_app_handler, stop_app_handler
-from app.api.router import api_router
+from app.api.routers import api_router
 from app.models.model import create_instance#ModelLoader
 
 logger = logging.getLogger(__name__)

@@ -2,11 +2,10 @@ from typing import Dict
 
 from fastapi import APIRouter
 
-from app.models.health import HealthResult
 
 router = APIRouter()
 
-@router.get("/", response_model=HealthResult, name="health")
+@router.get("/", name="health")
 async def get_hearbeat() -> Dict[str, str]:
     """
     Health check endpoint.
