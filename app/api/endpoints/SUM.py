@@ -12,7 +12,6 @@ from app.core.config import settings
 from app.models.model import SUMModel
 from app.models.result import SUMResult
 from app.models.payload import SUMPayload
-from app.api.deps import get_ml_models
 
 from uuid import UUID
 
@@ -26,7 +25,6 @@ logger = logging.getLogger(__name__)
 async def summarize(
     request: Request,
     payload: SUMPayload,
-    # ml_models: Dict = Depends(get_ml_models)
 ) -> SUMResult:
 
     model: SUMModel = request.app.state.models[settings.MODEL_TYPE]

@@ -63,7 +63,7 @@ class SUMModel(Base):
         
         SUM_input = context
         prediction_result = self.engine(SUM_input)
-        
+
         return prediction_result
 
     def predict(self, payload: SUMPayload) -> SUMResult:

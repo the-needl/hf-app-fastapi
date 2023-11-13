@@ -75,9 +75,7 @@ class Settings(BaseSettings):
 
     @property
     def UVICORN_WORKER_COUNT(self) -> int:
-        if self.ENVIRONMENT == AppEnvironment.LOCAL:
-            return int(cpu_count() *2 + 1)
-        return 3
+        return int(cpu_count() * 2 + 1)
 
     class Config(AppConfig):
         env_prefix: ClassVar = ""
