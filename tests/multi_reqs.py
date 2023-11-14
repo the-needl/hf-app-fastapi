@@ -3,6 +3,13 @@ import httpx
 import time
 import json
 
+async def send_get_request(session, text):
+    url = "http://0.0.0.0:8000/"
+    
+    response = await session.get(url)
+
+    return response
+
 async def send_post_request(session, text):
     url = "http://0.0.0.0:8000/api/sum/"
     payload = {'context': text}
@@ -25,21 +32,26 @@ async def send_post_request(session, text):
 
 async def send_multiple_requests(num_requests, text):
     total_start_time = time.time()
+    payload = {'text': {text}}
 
-    async with httpx.AsyncClient() as session:
-        tasks = [send_post_request(session, text) for _ in range(num_requests)]
+    async with httpx.AsyncClient(timeout=None, params=payload) as session:
+    # async with httpx.AsyncClient() as session:
+        tasks = [send_get_request(session, text) for _ in range(num_requests)]
+        # tasks = [send_post_request(session, text) for _ in range(num_requests)]
         request_times = await asyncio.gather(*tasks)
 
     total_end_time = time.time()
     total_elapsed_time = total_end_time - total_start_time
+    
     return total_elapsed_time, request_times
 
 
 if __name__ == "__main__":
-    num_requests = 2 # Replace with the desired number of requests
+    num_requests = 10 # Replace with the desired number of requests
     user_text = """
-    Warren Buffett's cash pile surged to a record $157bn in the third quarter, as the Hathaway Hathaway continues to sell stakes in publicly traded companies. Berkshire Hathaway has been one of the big beneficiaries of rising US interest rates, which have climbed above 5% this year. The company's operating businesses, which span the BNSF railroad, Geico auto-insurer, and aircraft parts maker Precision Castparts, reported strong underwriting profits of $2.4bn. However, revenue from these businesses experienced modest declines due to weak demand for new inventory. Sales slid across all industries except apparel and real estate.Berkshire Hathaway also took a large charge related to the 2020 and 2022 wildfires that spread through California and Oregon. The decline of the company's stock portfolio, which is accounted for in Berkshire's profit statement, dragged down the overall results.
+    Warren Buffett's cash pile surged to a record $157bn in the third quarter, as the Hathaway Hathaway continues to sell stakes in publicly traded companies.
     """
+    # user_text = "Ray is great!"
     total_time, request_times = asyncio.run(send_multiple_requests(num_requests, user_text))
 
     print(f"Total time spent for {num_requests} requests: {total_time:.2f} seconds")

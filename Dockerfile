@@ -19,4 +19,5 @@ RUN poetry install
 # ARG OPENAI_API_KEY
 # ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
-CMD ["poetry", "run", "start"]
+# CMD ["poetry", "run", "start"]
+CMD ["serve", "run", "app.main:main"]

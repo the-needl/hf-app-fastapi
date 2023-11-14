@@ -3,6 +3,7 @@ services:
   hf-app-fastapi:
     build:
       context: .
+      # shm_size: '40gb'
     volumes:
     # only filechanges in .app trigger app live-reload
       - ./:/app

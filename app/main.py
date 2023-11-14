@@ -2,14 +2,20 @@ import logging
 import sys
 import time
 
-import uvicorn
+# import uvicorn
 from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.core.event_handlers import start_app_handler, stop_app_handler
 from app.api.routers import api_router
-from app.models.model import create_instance#ModelLoader
+from app.models.model import create_instance
+
+from app.models.model import SUMModel
+from app.models.result import SUMResult
+from app.models.payload import SUMPayload
+
+from ray import serve
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +45,33 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    lifespan=lifespan)
+    lifespan=lifespan
+    )
 
 app.include_router(api_router, prefix=settings.API_PREFIX)
+
+@serve.deployment
+@serve.ingress(app)
+class HFModel:
+    def __init__(self):
+        self._model = create_instance(settings.MODEL_TYPE)
+
+    @app.post("/sum")
+    async def summarize(
+        self,
+        # request: Request,
+        payload: SUMPayload,
+    ) -> SUMResult:
+
+        # model: SUMModel = request.app.state.models[settings.MODEL_TYPE]
+        summary: SUMResult = self._model.predict(payload)
+
+        return summary
+    
+    @app.get("/test")
+    async def test():
+        return "prova test"
+
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
@@ -56,10 +86,13 @@ def start():
     __setup_logging(settings.LOG_LEVEL)
     
     """Launched with `poetry run start` at root level"""
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        workers=settings.UVICORN_WORKER_COUNT
-    )
+    # uvicorn.run(
+    #     "app.main:app",
+    #     host="0.0.0.0",
+    #     port=8000,
+    #     reload=True,
+    #     workers=settings.UVICORN_WORKER_COUNT
+    # )
+main = HFModel.bind()
+    # serve.run(main, route_prefix="/api")
+

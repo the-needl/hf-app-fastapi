@@ -13,6 +13,8 @@ from app.models.payload import SUMPayload
 from app.models.result import SUMResult
 from app.core.messages import NO_VALID_PAYLOAD
 
+from ray import serve
+
 logger = logging.getLogger(__name__)
 
 def create_instance(model_type: str) -> Base:
