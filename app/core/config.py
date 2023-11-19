@@ -1,10 +1,11 @@
 import os
 from enum import Enum
-from typing import List, Union, Optional, ClassVar
+from typing import List, Union, Optional, ClassVar, Dict
 from pydantic import AnyHttpUrl, validator, SecretStr
 from pydantic_settings import BaseSettings
 from multiprocessing import cpu_count
 
+from app.models.model import *
 
 class AppConfig(BaseSettings):
     """
@@ -48,10 +49,8 @@ class Settings(BaseSettings):
     
     DEFAULT_MODEL_PATH: str = "./.hf_models/models"
     
-    MODEL_TYPE: str = "SUM"
-    MODEL_NAME: str = "facebook/bart-large-cnn"
-    # NER_MODEL_NAME: str = "xlm-roberta-large-finetuned-conll03-english"
-    # KEY_MODEL_NAME: str = "ml6team/keyphrase-extraction-kbir-inspec"
+    MODEL_TYPE: str
+    MODEL_NAME: str
     
     @property
     def VERBOSE(self) -> bool:
