@@ -7,7 +7,8 @@ from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.core.factory import create_instance, create_router
+from app.models.model import create_instance
+from app.api.routers import create_router
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ local_models = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.models = {}
-    app.state.models[settings.MODEL_TYPE] = create_instance()
+    app.state.models[settings.MODEL_TYPE] = create_instance(settings.MODEL_TYPE)
     yield
     app.state.models.clear()
 

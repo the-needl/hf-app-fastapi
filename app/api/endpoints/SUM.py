@@ -9,7 +9,6 @@ from collections import OrderedDict
 
 from app.core.config import settings
 
-from app.models.model import SUMModel
 from app.models.result import SUMResult
 from app.models.payload import SUMPayload
 

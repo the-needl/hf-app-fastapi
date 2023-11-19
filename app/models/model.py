@@ -3,11 +3,13 @@ from pydantic import BaseModel
 
 import logging
 
+import importlib
+
 from transformers import AutoTokenizer
 from transformers import AutoModelForSeq2SeqLM
 from transformers import pipeline
 
-from app.core.config import settings
+# from app.core.config import settings
 from app.models.base import Base
 from app.models.instances import *
 
