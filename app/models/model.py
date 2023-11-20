@@ -5,17 +5,10 @@ import logging
 
 import importlib
 
-from transformers import AutoTokenizer
-from transformers import AutoModelForSeq2SeqLM
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
-# from app.core.config import settings
 from app.models.base import Base
 from app.models.instances import *
-
-# from app.models.payload import SUMPayload
-# from app.models.result import SUMResult
-# from app.core.messages import NO_VALID_PAYLOAD
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +21,7 @@ def create_instance(model_type: str) -> Base:
     except AttributeError:
         print(f"Class {model_type}Model not found.")
         
-    return model()
+    return model_class()
     
 class NERModel(Base):
     pass

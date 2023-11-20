@@ -3,9 +3,7 @@ from pydantic import BaseModel
 
 import logging
 
-from transformers import AutoTokenizer
-from transformers import AutoModelForSeq2SeqLM
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
 from app.core.config import settings
 from app.models.base import Base
@@ -49,8 +47,8 @@ class SUMModel(Base):
     def _predict(self, context: str) -> List:
         logger.debug("Predicting.")
         
-        SUM_input = context
-        prediction_result = self.engine(SUM_input)
+        _input = context
+        prediction_result = self.engine(_input)
 
         return prediction_result
 
