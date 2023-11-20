@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.models.model import create_instance
+from app.engine.models import create_instance
 from app.api.routers import create_router
 
 logger = logging.getLogger(__name__)

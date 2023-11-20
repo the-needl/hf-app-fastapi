@@ -21,10 +21,10 @@ import logging
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
 from app.core.config import settings
-from app.models.base import Base
+from app.engine.base import Base
 
-from app.models.payload import ZSCPayload
-from app.models.result import ZSCResult
+from app.engine.payload import ZSCPayload
+from app.engine.result import ZSCResult
 from app.core.messages import NO_VALID_PAYLOAD
 
 logger = logging.getLogger(__name__)

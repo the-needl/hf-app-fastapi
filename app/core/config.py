@@ -5,7 +5,7 @@ from pydantic import AnyHttpUrl, validator, SecretStr
 from pydantic_settings import BaseSettings
 from multiprocessing import cpu_count
 
-from app.models.model import *
+from app.engine.models import *
 
 class AppConfig(BaseSettings):
     """

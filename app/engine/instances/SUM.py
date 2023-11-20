@@ -1,15 +1,14 @@
-from typing import Dict, List
-from pydantic import BaseModel
+from typing import List
 
 import logging
 
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
 from app.core.config import settings
-from app.models.base import Base
+from app.engine.base import Base
 
-from app.models.payload import SUMPayload
-from app.models.result import SUMResult
+from app.engine.payload import SUMPayload
+from app.engine.result import SUMResult
 from app.core.messages import NO_VALID_PAYLOAD
 
 logger = logging.getLogger(__name__)
@@ -39,10 +38,10 @@ class SUMModel(Base):
         logger.debug("Post-processing prediction.")
         
         # returned data is a Dict within a List, Dict to be passed to SUMResult
-        summary_raw = prediction[0]['summary_text']
-        summary = SUMResult(summary=summary_raw)
+        result_raw = prediction[0]['summary_text']
+        result = SUMResult(raw=result_raw)
         
-        return summary
+        return result
 
     def _predict(self, context: str) -> List:
         logger.debug("Predicting.")

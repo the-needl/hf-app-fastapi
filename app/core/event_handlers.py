@@ -3,7 +3,7 @@ from typing import Callable, Type
 from fastapi import FastAPI
 import logging
 
-from app.models.base import Base
+from app.engine.base import Base
 
 logger = logging.getLogger(__name__)
 
