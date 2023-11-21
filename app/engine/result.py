@@ -16,6 +16,13 @@ class NERResult(BaseModel):
     
     entities: List[Entity]
     
+class SENTResult(BaseModel):
+    class Entity(BaseModel):
+        label: str
+        score: float
+        
+    entities: List[Entity]
+    
 class KEYResult(BaseModel):
     summary: str
 
