@@ -79,10 +79,9 @@ class Base:
             texts = [context]
         else:
             text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-                chunk_size=chunk_length, chunk_overlap=0
+                chunk_size=chunk_length*0.9, chunk_overlap=chunk_length*0.1
                 )
             texts = text_splitter.split_text(context)
-            print(texts)
             
         return texts
     

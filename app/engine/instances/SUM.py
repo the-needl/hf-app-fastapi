@@ -26,6 +26,10 @@ class SUMModel(Base):
         
         super().__init__(*args, **model_args)
 
+        self.model_params = {
+            'min_length': 30,
+            'do_sample': False
+        }
         self.engine = pipeline("summarization", model=self.model, tokenizer=self.tokenizer)
 
     def _pre_process(self, payload: BasePayload) -> str:
@@ -40,7 +44,7 @@ class SUMModel(Base):
         # returned data is a Dict within a List, Dict to be passed to SUMResult
         result_raw = prediction[0]['summary_text']
         result = SUMResult(summary=result_raw)
-        
+    
         return result
 
     def _output(self, context: str) -> List:
@@ -52,10 +56,11 @@ class SUMModel(Base):
             # If chunks created, recursive summarization triggered
             summaries = []
             for chunk in context:
-                summaries.append(self.engine(chunk, **settings.MODEL_ARGS.dict())[0]['summary_text'])
+                # exclude_none=True needed to drop keys = None
+                summaries.append(self.engine(chunk, **self.model_params)[0]['summary_text'])
             context = " ".join(summaries)
 
-        prediction_result = self.engine(context, **settings.MODEL_ARGS.dict())
+        prediction_result = self.engine(context, **self.model_params)
 
         return prediction_result
     

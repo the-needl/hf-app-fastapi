@@ -1,7 +1,7 @@
 import os
 from enum import Enum
-from typing import List, Union, Optional, ClassVar, Dict
-from pydantic import BaseModel, AnyHttpUrl, validator, SecretStr
+from typing import Optional, ClassVar
+from pydantic import BaseModel, validator
 from pydantic_settings import BaseSettings
 from multiprocessing import cpu_count
 
@@ -34,13 +34,15 @@ class AppEnvironment(str, Enum):
     PREVIEW = "preview"
     PRODUCTION = "production"
     
-class ModelArgs(BaseModel):
-    min_length: int
+# class ModelArgs(BaseModel):
+#     min_length: Optional[int] = None
+#     max_length: Optional[int] = None
+#     do_sample: Optional[bool] = None
 
 class Settings(BaseSettings):
     """
     Application settings.
-    """
+    """ 
     class Config(AppConfig):
         env_prefix: ClassVar = ""
 
@@ -53,7 +55,7 @@ class Settings(BaseSettings):
     
     MODEL_TYPE: str
     MODEL_NAME: str
-    MODEL_ARGS: ModelArgs
+    # MODEL_ARGS: Optional[ModelArgs].model_dump()
     
     @property
     def VERBOSE(self) -> bool:
