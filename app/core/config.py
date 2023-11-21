@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     
     MODEL_TYPE: str
     MODEL_NAME: str
+    MODEL_ARGS: Dict
     
     @property
     def VERBOSE(self) -> bool:

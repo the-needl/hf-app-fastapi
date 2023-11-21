@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from pathlib import Path
 
@@ -11,8 +11,6 @@ from transformers import PreTrainedModel, PreTrainedTokenizer
 
 from langchain.text_splitter import CharacterTextSplitter
 import tiktoken
-
-from app.engine.payload import BasePayload
 
 logger = logging.getLogger(__name__)
 
@@ -40,41 +38,45 @@ class Base:
         self.tokenizer, self.model = self.__load_model()
 
     @abstractmethod
+    def _pre_process(self):
+        pass
+    
+    @abstractmethod
     def _post_process(self):
+        pass
+    
+    @abstractmethod
+    def _output(self):
         pass
 
     @abstractmethod
     def output(self):
         pass
     
-    def _pre_process(self, payload: BasePayload) -> str:
-        logger.debug("Pre-processing payload..")
-        result = payload.context
-        
-        return result
-    def _output(self, context: str) -> List:
-        logger.debug("Predicting..")
-        
-        prediction_result = self.engine(context)
-
-        return prediction_result
-    
     def _get_context_len(self, context: str) -> int:
+        """
+        Return context token length.
+        """
         return len(self.tokenizer.encode(context))
     
     def _split_context(self,
                        context: str,
                        chunk_length: int = None) -> List:
-        
+        """
+        Return context as list of chunks only if len(context) <= len(chunk).
+        """
         if not chunk_length:
             chunk_length = self.tokenizer.model_max_legth
             
-        text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
-            chunk_size=chunk_length, chunk_overlap=0
-            )
-        texts = text_splitter.split_text(context)
-        
-        return texts
+        if self._get_context_len(context) <= chunk_length:
+            return [context]
+        else:
+            text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
+                chunk_size=chunk_length, chunk_overlap=0
+                )
+            texts = text_splitter.split_text(context)
+            
+            return texts
     
     def __repr__(self):
         return f"{self.__class__.__name__}(model={self.save_path})"
@@ -106,7 +108,6 @@ class Base:
         return tokenizer, model
 
     def retrieve(self) -> Tuple:
-
         """Retriver
 
         Returns:

@@ -27,7 +27,13 @@ class SUMModel(Base):
         super().__init__(*args, **model_args)
 
         self.engine = pipeline("summarization", model=self.model, tokenizer=self.tokenizer)
-    
+
+    def _pre_process(self, payload: BasePayload) -> str:
+        logger.debug("Pre-processing payload..")
+        result = payload.context
+        
+        return result
+
     def _post_process(self, prediction: List) -> SUMResult:
         logger.debug("Post-processing prediction.")
         
@@ -37,8 +43,24 @@ class SUMModel(Base):
         
         return result
 
+    def _output(self, context: str) -> List:
+        logger.debug("Predicting..")
+        
+        context = self._split_context(context)
+        
+        if len(context) > 1:
+            # If chunks created, recursive summarization triggered
+            summaries = []
+            for chunk in context:
+                summaries.append(self.engine(chunk[0]['summary_text'], **settings.MODEL_ARGS))
+            context = " ".join(summaries)
+
+        prediction_result = self.engine(context, **settings.MODEL_ARGS)
+
+        return prediction_result
+    
+
     def output(self, payload: BasePayload) -> SUMResult:
-        super().output()
         
         if payload is None:
             raise ValueError(NO_VALID_PAYLOAD.format(payload))
@@ -47,7 +69,7 @@ class SUMModel(Base):
         pre_proc_out = self._pre_process(payload)
         
         # call the model itself
-        out = self._predict(pre_proc_out)
+        out = self._output(pre_proc_out)
         logger.info(out)
         
         # prepare model output
