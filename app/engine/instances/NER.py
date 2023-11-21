@@ -26,19 +26,38 @@ class NERModel(Base):
         
         super().__init__(*args, **model_args)
 
-        self.model_params = {
-            
-        }
-        self.engine = pipeline("token-classification", model=self.model, tokenizer=self.tokenizer)
+        self.model_params = {"aggregation_strategy":"simple"}
+        self.engine = pipeline("ner", model=self.model, tokenizer=self.tokenizer)
+    
+    def _pre_process(self, payload: BasePayload) -> str:
+        logger.debug("Pre-processing payload..")
+        result = payload.context
+        
+        return result
     
     def _post_process(self, prediction: List) -> NERResult:
         logger.debug("Post-processing prediction..")
         
         # returned data is a List of Dicts
-        result_raw = prediction
+        result_raw = prediction[0]
         result = NERResult(entities=result_raw)
         
         return result
+
+    def _output(self, context: str) -> List:
+        logger.debug("Predicting..")
+        
+        context = self._split_context(context)
+
+        if len(context) > 1:
+            # If chunks created, recursive summarization triggered
+            ners = []
+            for chunk in context:
+                [ners.append(key) for key in self.engine(chunk, **self.model_params)]
+        else:
+            ners = self.engine(context, **self.model_params)
+
+        return ners
 
     def output(self, payload: BasePayload) -> NERResult:
         super().output()
@@ -50,7 +69,7 @@ class NERModel(Base):
         pre_proc_out = self._pre_process(payload)
         
         # call the model itself
-        out = self._predict(pre_proc_out)
+        out = self._output(pre_proc_out)
         logger.info(out)
         
         # prepare model output
