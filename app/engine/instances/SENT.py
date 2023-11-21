@@ -2,7 +2,7 @@ from typing import List
 
 import logging
 
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 from app.core.config import settings
 from app.core.messages import NO_VALID_PAYLOAD
@@ -19,7 +19,7 @@ class SENTModel(Base):
         model_args = {
             'model_name': settings.MODEL_NAME,
             'model_path': settings.DEFAULT_MODEL_PATH,
-            'model_loader': AutoModelForTokenClassification,
+            'model_loader': AutoModelForSequenceClassification,
             'tokenizer_loader': AutoTokenizer
         }
         model_args.update(kwargs)
@@ -51,13 +51,13 @@ class SENTModel(Base):
 
         if len(context) > 1:
             # If chunks created, recursive summarization triggered
-            ners = []
+            sents = []
             for chunk in context:
-                [ners.append(key) for key in self.engine(chunk, **self.model_params)]
+                [sents.append(key) for key in self.engine(chunk, **self.model_params)]
         else:
-            ners = self.engine(context, **self.model_params)[0]
+            sents = self.engine(context, **self.model_params)
 
-        return ners
+        return sents
 
     def output(self, payload: BasePayload) -> SENTResult:
         super().output()
