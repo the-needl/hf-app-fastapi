@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from typing import List
+from typing import List, Dict
 
 
 class SUMResult(BaseModel):
@@ -22,6 +22,13 @@ class SENTResult(BaseModel):
         score: float
         
     entities: List[Entity]
+
+class ZSCResult(BaseModel):
+    class Entity(BaseModel):
+        label: str
+        score: float
+        
+    entities: List[Entity]
     
 class KEYResult(BaseModel):
     summary: str
@@ -29,5 +36,3 @@ class KEYResult(BaseModel):
 class QAResult(BaseModel):
     summary: str
 
-class ZSCResult(BaseModel):
-    summary: str

@@ -92,7 +92,7 @@ class Base:
     def __download_model(self) -> None:
 
         logger.debug(f"[+] Downloading {self.model_name}")
-        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.model_name}")
+        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.model_name}", use_fast=False)
         model = self.model_loader.from_pretrained(f"{self.model_name}")
 
         logger.debug(f"[+] Saving {self.model_name} to {self.save_path}")
@@ -105,7 +105,7 @@ class Base:
     def __load_model(self) -> Tuple:
 
         logger.debug(f"[+] Loading model from {self.save_path}")
-        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.save_path}")
+        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.save_path}", use_fast=False)
         # Check if GPU is available
         device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info(f"[+] Model loaded in {device} complete")

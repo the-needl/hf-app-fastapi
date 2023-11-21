@@ -2,6 +2,8 @@ from typing import List
 
 import logging
 
+import numpy as np
+
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 from app.core.config import settings
@@ -13,7 +15,7 @@ from app.engine.result import ZSCResult
 
 logger = logging.getLogger(__name__)
 
-class SENTModel(Base):
+class ZSCModel(Base):
     def __init__(self, *args, **kwargs):
         
         model_args = {
@@ -26,8 +28,8 @@ class SENTModel(Base):
         
         super().__init__(*args, **model_args)
 
-        self.model_params = {}
-        self.engine = pipeline("text-classification", model=self.model, tokenizer=self.tokenizer)
+        self.model_params = {"candidate_labels":["article", "other"], "multi_label":False}
+        self.engine = pipeline("zero-shot-classification", model=self.model, tokenizer=self.tokenizer)
     
     def _pre_process(self, payload: BasePayload) -> str:
         logger.debug("Pre-processing payload..")
@@ -39,7 +41,8 @@ class SENTModel(Base):
         logger.debug("Post-processing prediction..")
         
         # returned data is a List of Dicts
-        result_raw = prediction
+        result_raw = prediction[0]
+        result_raw = [{"label":label.strip(), "score":score} for label, score in zip(result_raw["labels"], result_raw["scores"])]
         result = ZSCResult(entities=result_raw)
         
         return result
@@ -48,16 +51,23 @@ class SENTModel(Base):
         logger.debug("Predicting..")
         
         context = self._split_context(context)
-
+        
         if len(context) > 1:
-            # If chunks created, recursive summarization triggered
-            sents = []
-            for chunk in context:
-                [sents.append(key) for key in self.engine(chunk, **self.model_params)]
-        else:
-            sents = self.engine(context, **self.model_params)
+            # If chunks created, evaluate each chunk then take average score for each label
 
-        return sents
+            result = self.engine(context[0], **self.model_params)
+            scores = np.array(result['scores'])
+            labels = np.array(result['labels'])
+            
+            for chunk in context[1:]:
+                result = self.engine(chunk, **self.model_params)
+                scores += np.array(result['scores'])
+                
+            scores = [{"labels":labels, "scores":scores/len(context)}]
+        else:
+            scores = self.engine(context, **self.model_params)
+
+        return scores
 
     def output(self, payload: BasePayload) -> ZSCResult:
         super().output()
