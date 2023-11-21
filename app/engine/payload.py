@@ -1,5 +1,4 @@
 from pydantic import BaseModel
 
-class SUMPayload(BaseModel):
+class BasePayload(BaseModel):
     context: str
-    

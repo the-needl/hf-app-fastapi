@@ -21,7 +21,7 @@ import logging
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
 from app.core.config import settings
-from app.engine.base import Base
+from app.engine.models import Base
 
 from app.engine.payload import ZSCPayload
 from app.engine.result import ZSCResult

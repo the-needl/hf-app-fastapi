@@ -1,7 +1,19 @@
 from pydantic import BaseModel
 
-from typing import Dict
+from typing import List
+
 
 class SUMResult(BaseModel):
     summary: str
-    #model: str = settings.MODEL_NAME
+
+class KEYResult(BaseModel):
+    summary: str
+
+class NERResult(BaseModel):
+    entities: List
+
+class QAResult(BaseModel):
+    summary: str
+
+class ZSCResult(BaseModel):
+    summary: str
