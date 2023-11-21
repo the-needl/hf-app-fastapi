@@ -9,7 +9,7 @@ import importlib
 import torch
 from transformers import PreTrainedModel, PreTrainedTokenizer
 
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import tiktoken
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,11 @@ class Base:
         """
         Return context token length.
         """
-        return len(self.tokenizer.encode(context))
+        context_len = len(self.tokenizer.encode(context))
+        # logger.debug(f"[-] Context length: {context_len}")
+        print(f"[-] Context length: {context_len}")
+        
+        return context_len
     
     def _split_context(self,
                        context: str,
@@ -66,17 +70,21 @@ class Base:
         Return context as list of chunks only if len(context) <= len(chunk).
         """
         if not chunk_length:
-            chunk_length = self.tokenizer.model_max_legth
+            chunk_length = self.tokenizer.model_max_length
             
+        # logger.debug(f"[-] Max model token length: {chunk_length}")
+        print(f"[-] Max model token length: {chunk_length}")
+        
         if self._get_context_len(context) <= chunk_length:
-            return [context]
+            texts = [context]
         else:
-            text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
+            text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
                 chunk_size=chunk_length, chunk_overlap=0
                 )
             texts = text_splitter.split_text(context)
+            print(texts)
             
-            return texts
+        return texts
     
     def __repr__(self):
         return f"{self.__class__.__name__}(model={self.save_path})"

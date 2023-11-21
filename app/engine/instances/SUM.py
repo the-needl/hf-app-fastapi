@@ -47,15 +47,15 @@ class SUMModel(Base):
         logger.debug("Predicting..")
         
         context = self._split_context(context)
-        
+
         if len(context) > 1:
             # If chunks created, recursive summarization triggered
             summaries = []
             for chunk in context:
-                summaries.append(self.engine(chunk[0]['summary_text'], **settings.MODEL_ARGS))
+                summaries.append(self.engine(chunk, **settings.MODEL_ARGS.dict())[0]['summary_text'])
             context = " ".join(summaries)
 
-        prediction_result = self.engine(context, **settings.MODEL_ARGS)
+        prediction_result = self.engine(context, **settings.MODEL_ARGS.dict())
 
         return prediction_result
     
