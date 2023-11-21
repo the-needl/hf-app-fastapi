@@ -26,6 +26,9 @@ class NERModel(Base):
         
         super().__init__(*args, **model_args)
 
+        self.model_params = {
+            
+        }
         self.engine = pipeline("token-classification", model=self.model, tokenizer=self.tokenizer)
     
     def _post_process(self, prediction: List) -> NERResult:
