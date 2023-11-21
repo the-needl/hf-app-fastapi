@@ -39,7 +39,7 @@ class NERModel(Base):
         logger.debug("Post-processing prediction..")
         
         # returned data is a List of Dicts
-        result_raw = prediction[0]
+        result_raw = prediction
         result = NERResult(entities=result_raw)
         
         return result
@@ -55,7 +55,7 @@ class NERModel(Base):
             for chunk in context:
                 [ners.append(key) for key in self.engine(chunk, **self.model_params)]
         else:
-            ners = self.engine(context, **self.model_params)
+            ners = self.engine(context, **self.model_params)[0]
 
         return ners
 
