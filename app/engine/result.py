@@ -11,8 +11,8 @@ class NERResult(BaseModel):
         entity_group: str
         score: float
         word: str
-        start: int
-        end: int
+        # start: int
+        # end: int
     
     entities: List[Entity]
     

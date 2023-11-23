@@ -53,7 +53,7 @@ class NERModel(Base):
             # If chunks created, recursive summarization triggered
             ners = []
             for chunk in context:
-                [ners.append(key) for key in self.engine(chunk, **self.model_params)]
+                [ners.append(dict((k,v) for k, v in key.items() if key not in ["start", "end"])) for key in self.engine(chunk, **self.model_params)]
         else:
             ners = self.engine(context, **self.model_params)[0]
 
