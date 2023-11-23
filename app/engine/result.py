@@ -11,17 +11,15 @@ class NERResult(BaseModel):
         entity_group: str
         score: float
         word: str
-        # start: int
-        # end: int
     
     entities: List[Entity]
     
 class SENTResult(BaseModel):
-    class Entity(BaseModel):
+    class Sentiment(BaseModel):
         label: str
         score: float
         
-    entities: List[Entity]
+    sentiments: List[Sentiment]
 
 class ZSCResult(BaseModel):
     class Entity(BaseModel):
@@ -29,10 +27,11 @@ class ZSCResult(BaseModel):
         score: float
         
     entities: List[Entity]
-    
-class KEYResult(BaseModel):
-    summary: str
 
 class QAResult(BaseModel):
-    summary: str
+    class Answer(BaseModel):
+        question: str
+        answer: str
+        
+    answers: List[Answer]
 

@@ -40,7 +40,7 @@ class SENTModel(Base):
         
         # returned data is a List of Dicts
         result_raw = prediction
-        result = SENTResult(entities=result_raw)
+        result = SENTResult(sentiments=result_raw)
         
         return result
 
