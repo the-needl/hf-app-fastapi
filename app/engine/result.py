@@ -32,6 +32,7 @@ class QAResult(BaseModel):
     class Answer(BaseModel):
         question: str
         answer: str
+        score: float
         
     answers: List[Answer]
 
