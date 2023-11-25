@@ -4,8 +4,8 @@ import logging
 
 from app.core.config import settings
 
-from app.engine.instances.SUM import SUMModel
-from app.engine.result import SUMResult
+from app.engine.instances.ZSC import ZSCModel
+from app.engine.result import ZSCResult
 from app.engine.payload import BasePayload
 
 
@@ -13,13 +13,13 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.post("/", response_model=SUMResult, name="run")
+@router.post("/", response_model=ZSCResult, name="run")
 async def summarize(
     request: Request,
     payload: BasePayload,
-) -> SUMResult:
+) -> ZSCResult:
 
-    model: SUMModel = request.app.state.models[settings.MODEL_TYPE]
-    output: SUMResult = model.output(payload)
+    model: ZSCModel = request.app.state.models[settings.MODEL_TYPE]
+    output: ZSCResult = model.output(payload)
 
     return output

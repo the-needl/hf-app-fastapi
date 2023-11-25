@@ -1,10 +1,11 @@
 import os
 from enum import Enum
-from typing import List, Union, Optional, ClassVar
-from pydantic import AnyHttpUrl, validator, SecretStr
+from typing import Optional, ClassVar
+from pydantic import BaseModel, validator
 from pydantic_settings import BaseSettings
 from multiprocessing import cpu_count
 
+from app.engine.models import *
 
 class AppConfig(BaseSettings):
     """
@@ -32,12 +33,16 @@ class AppEnvironment(str, Enum):
     LOCAL = "local"
     PREVIEW = "preview"
     PRODUCTION = "production"
-
+    
+# class ModelArgs(BaseModel):
+#     min_length: Optional[int] = None
+#     max_length: Optional[int] = None
+#     do_sample: Optional[bool] = None
 
 class Settings(BaseSettings):
     """
     Application settings.
-    """
+    """ 
     class Config(AppConfig):
         env_prefix: ClassVar = ""
 
@@ -48,10 +53,9 @@ class Settings(BaseSettings):
     
     DEFAULT_MODEL_PATH: str = "./.hf_models/models"
     
-    MODEL_TYPE: str = "SUM"
-    MODEL_NAME: str = "facebook/bart-large-cnn"
-    # NER_MODEL_NAME: str = "xlm-roberta-large-finetuned-conll03-english"
-    # KEY_MODEL_NAME: str = "ml6team/keyphrase-extraction-kbir-inspec"
+    MODEL_TYPE: str
+    MODEL_NAME: str
+    # MODEL_ARGS: Optional[ModelArgs].model_dump()
     
     @property
     def VERBOSE(self) -> bool:

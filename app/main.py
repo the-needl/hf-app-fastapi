@@ -7,9 +7,8 @@ from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.core.event_handlers import start_app_handler, stop_app_handler
-from app.api.routers import api_router
-from app.models.model import create_instance#ModelLoader
+from app.engine.models import create_instance
+from app.api.routers import create_router
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,6 @@ def __setup_logging(log_level: str):
     root_logger.addHandler(stream_handler)
     logger.info("Set up logging with log level %s", log_level)
 
-
 local_models = {}
 
 @asynccontextmanager
@@ -41,7 +39,7 @@ app = FastAPI(
     version=settings.APP_VERSION,
     lifespan=lifespan)
 
-app.include_router(api_router, prefix=settings.API_PREFIX)
+app.include_router(create_router(settings.MODEL_TYPE), prefix=settings.API_PREFIX)
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):

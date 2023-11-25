@@ -1,13 +1,16 @@
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from pathlib import Path
 
 import logging
 from abc import abstractmethod
+import importlib
 
 import torch
-from transformers import PreTrainedModel
-from transformers import PreTrainedTokenizer
+from transformers import PreTrainedModel, PreTrainedTokenizer
+
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+import tiktoken
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +44,7 @@ class Base:
     @abstractmethod
     def _post_process(self):
         pass
-
+    
     @abstractmethod
     def _output(self):
         pass
@@ -50,6 +53,38 @@ class Base:
     def output(self):
         pass
     
+    def _get_context_len(self, context: str) -> int:
+        """
+        Return context token length.
+        """
+        context_len = len(self.tokenizer.encode(context))
+        # logger.debug(f"[-] Context length: {context_len}")
+        print(f"[-] Context length: {context_len}")
+        
+        return context_len
+    
+    def _split_context(self,
+                       context: str,
+                       chunk_length: int = None) -> List:
+        """
+        Return context as list of chunks only if len(context) <= len(chunk).
+        """
+        if not chunk_length:
+            chunk_length = self.tokenizer.model_max_length
+            
+        # logger.debug(f"[-] Max model token length: {chunk_length}")
+        print(f"[-] Max model token length: {chunk_length}")
+        
+        if self._get_context_len(context) <= chunk_length:
+            texts = [context]
+        else:
+            text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+                chunk_size=int(chunk_length*0.9), chunk_overlap=0
+                )
+            texts = text_splitter.split_text(context)
+            
+        return texts
+    
     def __repr__(self):
         return f"{self.__class__.__name__}(model={self.save_path})"
 
@@ -57,7 +92,7 @@ class Base:
     def __download_model(self) -> None:
 
         logger.debug(f"[+] Downloading {self.model_name}")
-        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.model_name}")
+        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.model_name}", use_fast=False)
         model = self.model_loader.from_pretrained(f"{self.model_name}")
 
         logger.debug(f"[+] Saving {self.model_name} to {self.save_path}")
@@ -70,7 +105,7 @@ class Base:
     def __load_model(self) -> Tuple:
 
         logger.debug(f"[+] Loading model from {self.save_path}")
-        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.save_path}")
+        tokenizer = self.tokenizer_loader.from_pretrained(f"{self.save_path}", use_fast=False)
         # Check if GPU is available
         device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info(f"[+] Model loaded in {device} complete")
@@ -80,10 +115,21 @@ class Base:
         return tokenizer, model
 
     def retrieve(self) -> Tuple:
-
         """Retriver
 
         Returns:
             Tuple: tokenizer, model
         """
         return self.tokenizer, self.model
+    
+    
+def create_instance(model_type: str) -> Base:
+    try:
+        module = importlib.import_module(f"app.engine.instances.{model_type}")
+        model_class = getattr(module, f"{model_type}Model")
+    except ImportError:
+        print(f"Module {model_type} not found.")
+    except AttributeError:
+        print(f"Class {model_type}Model not found.")
+        
+    return model_class()
