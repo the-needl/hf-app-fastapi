@@ -36,3 +36,11 @@ class QAResult(BaseModel):
         
     answers: List[Answer]
 
+class EMBResult(BaseModel):
+    class Embedding(BaseModel):
+        question: str
+        answer: str
+        score: float
+        
+    embeddings: List[Embedding]
+
