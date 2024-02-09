@@ -2,32 +2,31 @@ from typing import List
 
 import logging
 
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
 from app.core.messages import NO_VALID_PAYLOAD
 
-from app.engine.models import Base
-from app.engine.payload import BasePayload
-from app.engine.result import NERResult
+from app.engine.models import EmbeddingBase
+from app.engine.payload import BasePayload, EMBPayload
+from app.engine.result import EMBResult
 
 logger = logging.getLogger(__name__)
 
-class NERModel(Base):
+class EMBModel(EmbeddingBase):
     def __init__(self, *args, **kwargs):
         
         model_args = {
             'model_name': settings.MODEL_NAME,
             'model_path': settings.DEFAULT_MODEL_PATH,
-            'model_loader': AutoModelForTokenClassification,
-            'tokenizer_loader': AutoTokenizer
+            'model_loader': SentenceTransformer,
         }
         model_args.update(kwargs)
         
         super().__init__(*args, **model_args)
 
         self.model_params = {"aggregation_strategy":"simple"}
-        self.engine = pipeline("ner", model=self.model, tokenizer=self.tokenizer)
+        self.engine = self.model.encode
     
     def _pre_process(self, payload: BasePayload) -> str:
         logger.debug("Pre-processing payload..")
@@ -35,31 +34,37 @@ class NERModel(Base):
         
         return result
     
-    def _post_process(self, prediction: List) -> NERResult:
+    def _post_process(self, prediction: List) -> EMBResult:
         logger.debug("Post-processing prediction..")
         
         # returned data is a List of Dicts
         result_raw = prediction
-        result = NERResult(entities=result_raw)
+        result = EMBResult(entities=result_raw)
         
         return result
 
-    def _output(self, context: str) -> List:
-        logger.debug("Predicting..")
-        
-        context = self._split_context(context)
+    def _output(self, context: List[str]) -> List:
+            """
+            Embeds a list of contexts.
 
-        if len(context) > 1:
-            # If chunks created, recursive summarization triggered
-            ners = []
-            for chunk in context:
-                [ners.append(dict((k,v) for k, v in key.items() if key not in ["start", "end"])) for key in self.engine(chunk, **self.model_params)]
-        else:
-            ners = self.engine(context, **self.model_params)[0]
+            Args:
+                context (List[str]): A list of contexts to be embedded.
 
-        return ners
+            Returns:
+                List: A list of embeddings for the input contexts.
+            """
+            
+            logger.debug("Embedding..")
+            
+            try:
+                embs = self.engine(context)
+            except Exception as e:
+                logger.error(f"An error occurred: {e}")
+                embs = []
 
-    def output(self, payload: BasePayload) -> NERResult:
+            return embs
+
+    def output(self, payload: EMBPayload) -> EMBResult:
         super().output()
         
         if payload is None:

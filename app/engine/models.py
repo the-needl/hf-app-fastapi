@@ -156,7 +156,8 @@ class EmbeddingBase:
         else:
             logger.debug(f"[+] Model already existing, loading from {self.save_path}")
 
-        self.tokenizer, self.model = self.__load_model()
+        self.model = self.__load_model()
+        self.max_seq_len = self.model.get_max_seq_length()
 
     @abstractmethod
     def _pre_process(self):
@@ -178,10 +179,7 @@ class EmbeddingBase:
         """
         Return context token length.
         """
-        context_len = len(self.tokenizer.encode(context))
-        # logger.debug(f"[-] Context length: {context_len}")
-        print(f"[-] Context length: {context_len}")
-        
+        context_len = self.model.tokenize(context)
         return context_len
     
     def _split_context(self,
@@ -191,7 +189,7 @@ class EmbeddingBase:
         Return context as list of chunks only if len(context) <= len(chunk).
         """
         if not chunk_length:
-            chunk_length = self.tokenizer.model_max_length
+            chunk_length = self.model.max_seq_len
             
         # logger.debug(f"[-] Max model token length: {chunk_length}")
         print(f"[-] Max model token length: {chunk_length}")
@@ -220,7 +218,7 @@ class EmbeddingBase:
         logger.debug("[+] Process completed")
 
     # Load model
-    def __load_model(self) -> Tuple:
+    def __load_model(self) -> SentenceTransformer:
         logger.debug(f"[+] Loading model from {self.save_path}")
         model = self.model_loader(f"{self.save_path}")
 
@@ -233,7 +231,7 @@ class EmbeddingBase:
         Returns:
             Tuple: tokenizer, model
         """
-        return self.tokenizer, self.model
+        return self.model
     
     
 def create_instance(model_type: str) -> Base:

@@ -38,9 +38,7 @@ class QAResult(BaseModel):
 
 class EMBResult(BaseModel):
     class Embedding(BaseModel):
-        question: str
-        answer: str
-        score: float
+        vector: List[float]
         
     embeddings: List[Embedding]
 
