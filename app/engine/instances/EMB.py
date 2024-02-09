@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.messages import NO_VALID_PAYLOAD
 
 from app.engine.models import EmbeddingBase
-from app.engine.payload import BasePayload, EMBPayload
+from app.engine.payload import EMBPayload
 from app.engine.result import EMBResult
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class EMBModel(EmbeddingBase):
         self.model_params = {"aggregation_strategy":"simple"}
         self.engine = self.model.encode
     
-    def _pre_process(self, payload: BasePayload) -> str:
+    def _pre_process(self, payload: EMBPayload) -> str:
         logger.debug("Pre-processing payload..")
         result = payload.context
         

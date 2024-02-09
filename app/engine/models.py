@@ -12,6 +12,8 @@ from sentence_transformers import SentenceTransformer
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import tiktoken
+from huggingface_hub._login import _login
+
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +126,7 @@ class Base:
         return self.tokenizer, self.model
     
     
-def create_instance(model_type: str) -> Base:
+def create_instance(model_type: str, hf_token: str) -> Base:
     try:
         module = importlib.import_module(f"app.engine.instances.{model_type}")
         model_class = getattr(module, f"{model_type}Model")
@@ -234,7 +236,10 @@ class EmbeddingBase:
         return self.model
     
     
-def create_instance(model_type: str) -> Base:
+def create_instance(model_type: str, hf_token: str) -> Base:
+    
+    _login(token=hf_token, add_to_git_credential=False)
+    
     try:
         module = importlib.import_module(f"app.engine.instances.{model_type}")
         model_class = getattr(module, f"{model_type}Model")
@@ -243,4 +248,4 @@ def create_instance(model_type: str) -> Base:
     except AttributeError:
         print(f"Class {model_type}Model not found.")
         
-    return model_class(SentenceTransformer)
+    return model_class()

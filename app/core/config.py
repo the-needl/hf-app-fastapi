@@ -55,6 +55,7 @@ class Settings(BaseSettings):
     
     MODEL_TYPE: str
     MODEL_NAME: str
+    HF_TOKEN: str
     # MODEL_ARGS: Optional[ModelArgs].model_dump()
     
     @property
