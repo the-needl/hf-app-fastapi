@@ -39,7 +39,7 @@ class EMBModel(EmbeddingBase):
         
         # returned data is a List of Dicts
         result_raw = prediction
-        result = EMBResult(entities=result_raw)
+        result = EMBResult(embeddings=result_raw)
         
         return result
 
