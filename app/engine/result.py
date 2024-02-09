@@ -36,3 +36,6 @@ class QAResult(BaseModel):
         
     answers: List[Answer]
 
+class EMBResult(BaseModel):
+    embeddings: List[List[float]]
+
